@@ -3,6 +3,15 @@ from typing import Optional
 import numpy as np
 
 
+# Exceptions
+class DimensionMismatch(ValueError):
+    """Something in your problem formulation is borked"""
+
+
+class BadLineSearchSpec(ValueError):
+    """Something is dorked in your Line search Specs"""
+
+
 class Problem:
     def __init__(
         self,
@@ -45,10 +54,6 @@ class Problem:
 
     def gradient(self, x: np.ndarray) -> np.ndarray:
         return self.Q.T @ x + self.Q @ x + self.b
-
-
-class BadLineSearchSpec(ValueError):
-    """Something is dorked in your Line search Specs"""
 
 
 class LineSearch:
@@ -114,10 +119,6 @@ class Backtracking(LineSearch):
             t *= self.beta
 
         return t
-
-
-class DimensionMismatch(ValueError):
-    """Something in your problem formulation is borked"""
 
 
 class Optimizer:
