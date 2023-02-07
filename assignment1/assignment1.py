@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from typing import Optional
 import numpy as np
 
@@ -139,7 +140,9 @@ class GradientDescent(Optimizer):
         return x - alpha * self.f.gradient(x)
 
 
-def do_optimization(f: Problem, opt: Optimizer, x0: np.ndarray, k: int = 1000) -> None:
+def do_optimization(
+    f: Problem, opt: Optimizer, x0: np.ndarray, epsilon: float, k: int = 1000
+) -> None:
     xk = np.copy(x0)
     print(f"f(x0): {f(x0)}")
     norm = None
@@ -170,5 +173,6 @@ if __name__ == "__main__":
 
     x0 = np.random.random(n)
 
-    do_optimization(f, gradient_descent_fixed_alpha, x0)
-    do_optimization(f, gradient_descent_armijo, x0)
+    print(f"ε: {epsilon}")
+    do_optimization(f, gradient_descent_fixed_alpha, x0, epsilon)
+    do_optimization(f, gradient_descent_armijo, x0, epsilon)
