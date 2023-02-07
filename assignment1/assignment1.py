@@ -90,8 +90,10 @@ class Backtracking(LineSearch):
             raise BadLineSearchSpec("t0 (initial step-size) must be >=0")
         self.t0 = t0
 
-        if not (alpha > 0.0 and alpha < 1.0):
-            raise BadLineSearchSpec("alpha (Armijo factor) must be in the range (0, 1)")
+        if not (alpha > 0.0 and alpha < 0.5):
+            raise BadLineSearchSpec(
+                "alpha (Armijo factor) must be in the range (0, 0.5)"
+            )
         self.alpha = alpha
 
         if not (beta > 0.0 and beta < 1.0):
