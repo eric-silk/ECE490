@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Eric Silk <eric.silk@ericsilk.com>"]
 readme = "README.md"
-packages = [{include = "uiuc_490_sp23"}]
+packages = [{include = "uiuc-490-sp23"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
