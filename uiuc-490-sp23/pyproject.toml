@@ -16,7 +16,7 @@ black = "^23.1.0"
 pylint = "^2.16.1"
 
 [tool.poetry.scripts]
-assignment1 = "assignment1"
+assignment1 = "assignment1:__main__"
 
 [build-system]
 requires = ["poetry-core"]

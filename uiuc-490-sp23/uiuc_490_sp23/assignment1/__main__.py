@@ -41,3 +41,35 @@ def assignment1(seed: int, epsilon: float, n: int, max_iter: int) -> None:
     print(f"ε: {epsilon}")
     _do_optimization(f, gradient_descent_fixed_alpha, x0, epsilon, max_iter=max_iter)
     _do_optimization(f, gradient_descent_armijo, x0, epsilon, max_iter=max_iter)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-s", "--seed", type=int, default=1234, help="The seed to use for randomization"
+    )
+    parser.add_argument(
+        "-e",
+        "--epsilon",
+        type=float,
+        default=1e-6,
+        help="Optimization convergence tolerance (must be >=0)",
+    )
+    parser.add_argument(
+        "-d",
+        "--dimension",
+        type=int,
+        default=10,
+        help="The problem dimension (integer, >0)",
+    )
+    parser.add_argument(
+        "-k",
+        "--max_iter",
+        type=int,
+        default=1000,
+        help="The maximum number of iterations allowed (integer, >0)",
+    )
+    args = parser.parse_args()
+    assignment1(args.seed, args.epsilon, args.dimension, args.max_iter)
