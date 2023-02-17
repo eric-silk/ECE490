@@ -1,15 +1,30 @@
 [tool.poetry]
 name = "uiuc-490-sp23"
 version = "0.1.0"
-description = ""
+license = "GPL-3.0-or-later"
+description = "Programming assignments for UIUC's ECE490: Introduction to Optimization course during Spring 2023"
 authors = ["Eric Silk <eric.silk@ericsilk.com>"]
 readme = "README.md"
+homepage = "https://github.com/eric-silk/ECE490"
+repository = "https://github.com/eric-silk/ECE490"
+keywords = ["optimization"]
+classifiers = [
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
 packages = [{include = "uiuc-490-sp23"}]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/eric-silk/ECE490/issues"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 numpy = "^1.24.2"
-
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
