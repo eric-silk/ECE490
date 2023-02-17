@@ -2,7 +2,7 @@
 Problem types should go here. For now, we'll assume they require are differentiable functions w/o constraints.
 This interface may change as we get more problems.
 """
-from typing import Optional
+from typing import Optional, Tuple
 from abc import ABC, abstractclassmethod
 import numpy as np
 
@@ -60,7 +60,22 @@ class QuadraticForm(Problem):
         return self.evaluate(x)
 
     def evaluate(self, x: np.ndarray) -> np.ndarray:
-        return x.T @ self.Q @ x + self.b @ x + self.c
+        return x.T @ self.Q @ x + np.dot(self.b.flatten(), x.flatten()) + self.c
 
     def gradient(self, x: np.ndarray) -> np.ndarray:
         return self.Q.T @ x + self.Q @ x + self.b
+
+    def get_Q(self) -> np.ndarray:
+        """Return the matrix Q from x^TQx+bx+c"""
+        return self.Q
+
+    def get_b(self) -> np.ndarray:
+        """Return the vector b from x^TQx+bx+c"""
+        return self.b
+
+    def get_c(self) -> float:
+        """Return the constant from x^TQx+bx+c"""
+        return self.c
+
+    def get_values(self) -> Tuple[np.ndarray, np.ndarray, float]:
+        return (self.Q, self.b, self.c)
