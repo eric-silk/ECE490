@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "uiuc-490-sp23"
-version = "0.1.0"
+version = "0.1.1"
 license = "GPL-3.0-or-later"
 description = "Programming assignments for UIUC's ECE490: Introduction to Optimization course during Spring 2023"
 authors = ["Eric Silk <eric.silk@ericsilk.com>"]
@@ -17,7 +17,7 @@ classifiers = [
     "Topic :: Education",
     "Topic :: Scientific/Engineering :: Mathematics",
 ]
-packages = [{include = "uiuc-490-sp23"}]
+packages = [{include = "uiuc_490_sp23"}]
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/eric-silk/ECE490/issues"
