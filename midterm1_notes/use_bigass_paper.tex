@@ -1,0 +1,15 @@
+\usepackage{ifthen}
+\newboolean{use_bigass_paper}
+\setboolean{use_bigass_paper}{false}
+
+\ifthenelse{\boolean{use_bigass_paper}}{
+    \newcommand{\mycolnums}{4}
+    \newcommand{\mypaperwidth}{17in}
+    \newcommand{\mypaperheight}{11in}
+    \newcommand{\splittheequation}{}
+}{
+    \newcommand{\mycolnums}{3}
+    \newcommand{\mypaperwidth}{11in}
+    \newcommand{\mypaperheight}{8in}
+    \newcommand{\splittheequation}{\]\[}
+}

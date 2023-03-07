@@ -1,0 +1,203 @@
+\documentclass[10pt,landscape]{article}
+% See the related file to switch between 8x11 and 11x17 paper
+\input{use_bigass_paper.tex}
+
+\usepackage{amssymb,amsmath,amsthm,amsfonts}
+\usepackage{mathrsfs}
+\usepackage{multicol,multirow}
+\usepackage{calc}
+\usepackage[landscape,paperwidth=\mypaperwidth, paperheight=\mypaperheight]{geometry}
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=blue]{hyperref}
+\usepackage{blindtext}
+\usepackage{ulem}
+
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{0.1\baselineskip}{\baselineskip}
+\titlespacing*{\subsection}{0pt}{0.25\baselineskip}{\baselineskip}
+
+\geometry{top=0.5in,bottom=0.5in,left=0.5in,right=0.5in}
+
+\pagestyle{empty}
+\title{ECE 490 Midterm Notesheet}
+\begin{document}
+%\maketitle
+
+%\begin{center}
+%    \Large{\textbf{490 Midterm Notesheet}}
+%\end{center}
+
+\begin{multicols*}{\mycolnums}
+    \section*{Basics}
+    $h=f/g\implies h'(x)=(f'g-fg')/g^2$
+    \subsection*{Linear Algebra}
+    \[\|x\|>0\forall x\neq0,\ \|x+y\|\leq\|x\|+\|y\|\]
+    \[\|x+y\|^2=\|x\|^2+\|y\|^2,\ |x^Ty|\leq\|x\|\|y\|\]
+    Cauchy Schwarz:
+    \[|x^Ty|\leq\|x\|\|y\|\]
+    \[\|x\|_1=\sum|x_i|, \|x\|_\infty=\max|x_1|\]
+    For matrices: $p=1$ is the maximum absolute column sum; $p=\infty$ is the
+    maximum absolute row sum, and $p=2$ is the largest singular value ($=\sqrt{\lambda_{\max}(A^TA)}$)
+    or the largest eigenvalue of $A$ if symmetric.
+    Eigenvectors: $\det|A-\lambda_iI| = 0$
+    \[\lambda_{\min}\|x\|^2 \leq x^TAx\leq \lambda_{\max}\|x\|^2\]
+    \[\mathrm{Tr}(A)=\Sigma\lambda_i,\ \det(A)=\Pi\lambda_i\]
+    \subsection*{Taylor's Theorem}
+    \[f(x) = \sigma_{|\alpha|\leq k}\frac{D^\alpha f(\alpha)}{\alpha!}(x-a)^\alpha\]
+    \subsubsection*{Definiteness}
+    \textbf{Minors}: determinant of submatrix formed by deleting rows/cols $i,j$. \textit{Principal}
+    minors: $i=j$. \textit{Leading} minors: upper left (i.e. keep only $i=j=\{1;1,2;1,2,\ldots n\}$)
+
+    \noindent
+    \textbf{PD}: $\forall\lambda>0$, all leading principal minors $>0$.
+    \noindent
+    \textbf{PSD}: $\forall\lambda\geq0$, \uline{all} \sout{leading} principal minors $\geq0$.
+    \subsection*{Convergence/Sequences/Series}
+    \[x_k\rightarrow x,\lim_{k\rightarrow\infty}x_k=x\]
+    \textbf{Cauchy Sequence}: Given $\epsilon>0\exists N_{\epsilon}$ s.t. $\|x_k-x_m\|<\epsilon\forall k,m\geq N_\epsilon$
+    $\{x_k\}$ converges $\iff \{x_k\}$ is Cauchy.
+
+    \noindent
+    \textbf{Limit point}: $x$ is a limit pt. of $\{x_k\}$ if $\exists$ a subsequence of
+    $\{x_k\}\rightarrow x$
+
+    \noindent
+    \textbf{Bounded Sequences}: every bounded sequence has at least one limit point. A bounded
+    sequence converges if it has a unique limit point.
+
+    \noindent
+    \textbf{Continuity}: $f$ is continuous at $x$ if for every $\{x_k\}\rightarrow x$,
+    $\lim_{k\rightarrow\infty}f(x_k)=f(x)$
+
+    \noindent
+    \textbf{Coercive}: $f : \mathcal{S}\rightarrow\mathbb{R}$ is coercive if
+    $\forall\{x_k\}\subset\mathcal{S}$ s.t. $\|x_k\|\rightarrow\infty$, $f(x_k)\rightarrow\infty$.
+
+    \noindent
+    \textbf{Weirstrass (extreme value)}: If $f$ is cont. over a compact set $\mathcal{S}$,
+    then $f$ attains it's min and max on $\mathcal{S}$. \textbf{Corollary}: if $\mathcal{S}$
+    is closed but not nececesarily bounded and $f$ is coercive on $\mathcal{S}$, it attains
+    it's minimum on $\mathcal{S}$. (can replace negative and max).
+
+    \section*{Convexity}
+    \[
+        \mathcal{S}\subseteq\mathbb{R}^n,\
+        \forall x,y\in\mathcal{S},\
+        \alpha\in[0,1],\
+        \alpha x+(1-\alpha)y\in\mathcal{S}
+    \]
+    \[f:\mathcal{S}\rightarrow\mathbb{R}, f(\alpha x+(1-\alpha)y)\leq\alpha f(x)+(1-\alpha)f(y)\]
+    This is \textit{strictly} convex if strictly $<$.
+    Sum of convex functions is convex. The composition $g(f(\cdot))$ is not guaranteed (consider $e^{-e^x}$) unless
+    $g$ is non-decreasing.
+    The intersection of two convex sets is convex; the intersection of two closed sets is closed.
+    The union of two convex sets is not nececesarily convex.
+
+    \noindent
+    \textbf{First order condition}: $f$ is convex on $\mathcal{S} \iff f(y)\geq f(x)+\nabla f(x)^T(y-x)$
+    (strictly is similar). The gradient is ``below'' $f$ everywhere in the set.
+
+    \noindent
+    \textbf{Second order condition}: $\nabla^2f(x)\geq 0\forall x\in\mathcal{S}$. Strictly follows similarly.
+    $f$ being \uline{strictly} convex on $\mathcal{S}$ does \textbf{not} imply $\nabla^2f(x)>0$ (consider $f(x)=x^4$)
+
+    \section*{Optimization}
+    \subsection*{Unconstrained}
+    \subsubsection*{Necessary Conditions}
+    \[\nabla f(x^*)=\mathbf{0},\ \nabla^2 f(x^*)\geq\mathbf{0}\]
+    \subsubsection*{Sufficient Conditions}
+    \[\nabla f(x^*)=\mathbf{0},\ \nabla^2 f(x^*)>\mathbf{0}\]
+    in some neighborhood around $x^*$, then $x^*$ is a \textit{strict} local min.
+
+    \noindent
+    If $f$ is convex, $x^*$ is a global minimum. If \textit{strictly} convex, $x^*$ is unique.
+
+    \subsection*{Gradient Methods}
+    \textbf{General Gradient Descent}: $x_{k+1}=x_k+\alpha_kd_k$ where $d_k$ has a positive
+    projection along $-\nabla f(x)$.
+    $d_k$ s.t. that $\nabla f(x_k)^Td_k < 0 \equiv -\nabla f(x_k)^Td_k > 0$
+    \subsection*{Step size selection}
+    \textbf{Armijo's rule}:
+    \[f(x_k+\alpha_kd_k) \leq f(x_k)+\sigma\alpha_k\nabla f(x_k)^Td_k\]
+    \[\alpha_{k+1} = \beta\alpha_k,\ \sigma\in[10^{-5},10^{-1}],\beta\in[0.1,0.5]\]
+    Any stepsize selection that does better than this inherits the convergence properties.
+    \subsection*{Convergence stuff}
+    \textbf{Lipschitz Continuity}: For a function $g$, $\exists L>0$ s.t.
+    $\|g(y)-g(x)\|\leq L\|y-x\|\forall x,y\in\mathbb{R}^n$
+    If $\|\nabla g(x)\|$ is bounded, $g$ is Lipschitz. $g$ needn't be differentiable
+    everywhere ($g=|x|$).
+
+    \noindent
+    \textbf{Lipschitz Gradient}: the gradient of a function is Lipschitz. If $f$ is
+    twice differentiable with $-MI \leq \nabla^2f(x)\leq MI$ then $\nabla f$ is Lipschitz
+    with constant $M$.
+
+    \noindent
+    \textbf{Descent Lemma}: Let $f$ be $\mathcal{C}^1$ with a Lipschitz gradient of constant $L$.
+    Then: $f(y)\leq f(x)+\nabla f(x)^T(y-x) + \frac{1}{2}\|y-x\|^2$
+
+    \noindent
+    \textbf{Convergence of GD w/ fixed stepsize}:
+    If $f$ has Lipschitz gradient with constant $L$ and $\alpha$ is sufficiently small, and
+    $f(x)>f_{\min}\forall x$, every limit point of ${x_k}$ is a stationary point of $f$. In particular,
+    $0<\alpha<\frac{2}{L}$. Doesn't work if gradient isn't Lipschitz (use $x^4$ and prove by contradiction).
+
+    \subsection*{``'' for convex functions}
+    If $\alpha$ selected from above, converges at a rate $\frac{1}{n}$. With Armijo rule,
+    this is true \textit{without prior knowledge of} $L$.
+
+    \noindent
+    \textbf{Strong Convexity}: $\nabla^2 f(x)\geq mI\forall x$. Strong convex $\implies$ strictly convex; reverse is not true
+    (see $x^4$). Strong convexity with parameter $m$ along with L-Lipschitz gradient $L\geq m$, then:
+    \[\frac{1}{2}m\|y-x\|^2\leq f(y)-f(x)-\nabla f(x)^T(y-x)\leq \frac{1}{2}L\|y-x\|^2\]
+    Gradient descent gives linear ($log(1/n)$) convergence for strongly convex functions.
+
+    \noindent
+    \textbf{Condition Number}: $L/M$ (also $\lambda_{\max}/\lambda_{\min}$ for quadratic). If large, convergence is slow. If $1$, convergence in one step.
+
+    \noindent
+    \textbf{Newton's method}: Faster convergence, 1 if $f$ is quadratic. Superlinear if $\nabla^2$ is L-Lipschitz.
+    If Hessian is singular or ND, won't work (use GD).
+
+    \section*{Constrained Optimization}
+    $\mathcal{S}$ is a non-empty closed and convex subset of $\mathbb{R}^n$.
+    If $x^*$ is a local min of $f$ over $\mathcal{S}$, then:
+    \[\nabla f(x^*)^T(x-x^*)\geq 0\forall x\in\mathcal{S}\]
+    If $f$ is convex over $\mathcal{S}$, then the above is \textit{sufficient} for a global
+    min.
+
+    \noindent
+    \textbf{Interior Point}:
+    $y$ is an interior point of $\mathcal{S}$ if $\exists\epsilon>0$ s.t.
+    $B_{\epsilon}=\{x:\|y-x\|<\epsilon\subset \mathcal{S}\}$. If it's a local min,
+    then it has to have a 0 grad. If convex, then $x^*$ is a global min $\iff\nabla f(x^*)=0$.
+
+    \noindent
+    \textbf{Projection}: let $\mathcal{S}$ be a closed, convex subset of $\mathbb{R}^n$. Then
+    the projection $[z]^s$ (z onto s) is:
+    \[[z]^S=y^* \iff (y^*-z)^T(y-y^*)\geq 0\forall y\in\mathcal{S}\]
+    \[\iff (z-y^*)^T(y-y^*)\leq 0\forall y\in\mathcal{S}\]
+    $y^*$ is the unique minimizer of $g(y)$ over $\mathcal{S}$:
+    \[\iff \nabla(y^*)^T(y-y^*)\geq 0\forall y\in\mathcal{S}\]
+    \[\iff (y^*-z)^T(y-y^*)\geq 0\forall y\in\mathcal{S}\]
+    \[\iff (z-y^*)^T(y-y^*)\leq 0\forall y\in\mathcal{S}\]
+
+    \textbf{Projection is non-expansive}:
+    \[\|[x]^\mathcal{S}-[z]^\mathcal{S}\|\leq\|x-z\|\]
+
+    \textbf{Projection on linear subspaces of} $\mathbb{R}^n$:
+    A linear subspace is a line/hyperplane in $\mathbb{R}^n$. It's closed and convex.
+    $z$ is some value in reals outside set, $y^*$ is its projection, $y$ is a random value in the set.
+    $[z]^S=y^*$ satisfies $(z-y^*)^T(y-y^*)\leq 0$ for all in y in S. By the fact that $S$ is a subspace,
+    $y-y^*=x\in S$ so $(z-y^*)^Tx\geq 0$ and thus $(z-y^*)^Tx=0$.
+    This is the \textit{Orthogonality Principle}.
+
+    \noindent
+    \textbf{Gradient Projection}:
+    $x_{k+1}=[x_k+\alpha_kd_k]^\mathcal{S}$
+    If f has $L-$Lipschitz gradient and $0<\alpha<2/L$ every limit point of this algo
+    is a fixed point. Then by the descent lemma, the method converges. For convex $f$, $x^*$
+    is a global min of $f$ on $\mathcal{S}$ $\iff x^*=[x^*-\alpha\nabla f(x^*)]^\mathcal{S}$.
+    Convergence is the same for strongly convex $f$ as the unconstrained case.
+
+\end{multicols*}
+\end{document}
