@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import multiprocessing as mp
 
 
 class F:
@@ -63,6 +64,38 @@ def plot_image(s_points: np.array, n=500, domain=(-1, 1, -1, 1)):
     plt.show()
 
 
+def job(job_spec):
+    s_points, ix, x, iy, y = job_spec
+    z0 = np.array([x, y])
+    zN = newton_method(z0)
+    code = np.argmin(np.linalg.norm(s_points - zN, ord=2, axis=1))
+    rslt = (iy, ix, code)
+
+    return rslt
+
+
+def plot_image_parallel(s_points: np.array, n=500, domain=(-1, 1, -1, 1)):
+    m = np.zeros((n, n))
+    xmin, xmax, ymin, ymax = domain
+    job_specs = []
+    # TODO cartesian product
+    for ix, x in enumerate(np.linspace(xmin, xmax, n)):
+        for iy, y in enumerate(np.linspace(ymin, ymax, n)):
+            job_specs.append((s_points, ix, x, iy, y))
+
+    with mp.Pool() as pool:
+        rslts = pool.map(job, job_specs)
+
+    for rslt in rslts:
+        iy, ix, code = rslt
+        m[iy, ix] = code
+
+    plt.imshow(m, cmap="brg")
+    plt.axis("off")
+    # plt.savefig("q2_hw3.png")
+    plt.show()
+
+
 if __name__ == "__main__":
     # Example of usage .
     # In this example , the stationary points are (0 , 0 ) , (1 , 1 ) , (2 , 2 ) and (3 , 3 ) .
@@ -70,4 +103,5 @@ if __name__ == "__main__":
     stationary_points = np.array(
         [[-1.0 / 2.0, np.sqrt(3) / 2.0], [-1.0 / 2.0, -np.sqrt(3) / 2.0], [1.0, 0.0]]
     )
-    plot_image(stationary_points)
+    # plot_image(stationary_points)
+    plot_image_parallel(stationary_points, n=500)
