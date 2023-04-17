@@ -34,7 +34,6 @@ class SimpleQuadraticForm(Problem):
     """
 
     def __init__(self, Q: np.ndarray) -> None:
-        super().__init__()
         self.Q = Q
 
     def evaluate(self, x: np.ndarray) -> np.ndarray:
@@ -68,7 +67,7 @@ class AugmentedLagrangian(Problem):
         self.f = f
         self.h = h
         if lambda0 is None:
-            self.lambda_ = np.zeros(self.h.dimension())
+            self.lambda_ = np.zeros(self.h.dimension()) + 0.1
         else:
             self.lambda_ = np.ones(self.h.dimension()) * lambda0
 
@@ -76,7 +75,9 @@ class AugmentedLagrangian(Problem):
 
     def evaluate(self, x: np.ndarray) -> np.ndarray:
         h = self.h(x)
-        return self.f(x) + self.lambda_.T @ h + self.c / 2 * h**2
+        return (
+            self.f(x) + self.lambda_.T @ h + self.c / 2 * np.linalg.norm(h, ord=2) ** 2
+        )
 
     def gradient(self, x: np.ndarray) -> np.ndarray:
         return self.f.gradient(x) + self.h.gradient(x) @ (

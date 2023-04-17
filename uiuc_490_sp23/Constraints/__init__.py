@@ -6,7 +6,7 @@ import numpy as np
 
 
 class Constraint(ABC):
-    def __call__(self, x: np.ndarray, norm: bool = True) -> float:
+    def __call__(self, x: np.ndarray, norm: bool = False) -> float:
         return self.evaluate(x, norm=norm)
 
     @abstractclassmethod
@@ -39,10 +39,10 @@ class LinearEqualityConstraint(EqualityConstraint):
         self.A = A
         self.b = b
 
-    def evaluate(self, x: np.ndarray, norm: bool = True) -> float:
+    def evaluate(self, x: np.ndarray, norm: bool = False) -> float:
         """
         The evaluate method, pass in x to check it
-        By default, returns the 2-norm of Ax-b; set norm=False to return Ax-b directly
+        By default, returns Ax-b directly. Set to True to return the 2-norm.
         """
         h = self.A @ x - self.b
         if norm:

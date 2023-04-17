@@ -35,19 +35,22 @@ def _do_optimization(
     line_search = Backtracking(lagrangian, 1.0, 0.1, 0.5)
     optimizer = GradientDescent(lagrangian, line_search)
 
-    x = np.zeros(n)
+    x = np.ones(n)
     xk = [x]
     ck = [lagrangian.c]
     lambda_k = [lagrangian.lambda_]
     i = 0
+    print(np.linalg.norm(h(x), ord=2))
     while np.linalg.norm(h(x), ord=2) >= epsilon:
-        for _ in inner_iter_count:
+        for _ in range(inner_iter_count):
             x = optimizer(x)
             xk.append(x)
+
         lagrangian.update_lambda(x)
         lagrangian.c = c_update(lagrangian.c)
         ck.append(lagrangian.c)
         lambda_k.append(lagrangian.lambda_)
+        print(np.linalg.norm(h(x), ord=2))
         i += 1
 
     print(f"Converged after {i} outer iterations!")
@@ -77,7 +80,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    c_update1 = lambda c: 1.1 * c
+    c_update1 = lambda c: 2 * c
     c_update2 = lambda c: 2 * c
     c_update3 = lambda c: c + 1
     c_update4 = lambda c: c + 10
