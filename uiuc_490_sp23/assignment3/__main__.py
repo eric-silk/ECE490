@@ -64,11 +64,13 @@ def _do_optimization(
     ck = [lagrangian.c]
     lambda_k = [lagrangian.lambda_]
     i = 0
-    print(np.linalg.norm(h(x), ord=2))
     while np.linalg.norm(h(x), ord=2) >= epsilon:
         for _ in range(inner_iter_count):
             x = optimizer(x)
             xk.append(x)
+            if np.linalg.norm(lagrangian.gradient(x), ord=2) <= epsilon:
+                # GD converged, early termination of inner loop
+                break
 
         lagrangian.update_lambda(x)
         lagrangian.c = c_update(lagrangian.c)
@@ -76,9 +78,9 @@ def _do_optimization(
         lambda_k.append(lagrangian.lambda_)
         i += 1
 
-    print(f"Converged after {i} outer iterations!")
-    print(x)
-    print(lagrangian.f(x))
+    print(f"Converged after {i} outer iterations and {len(xk)} total iterations!")
+    print("final x:", x)
+    print("final L(x):", lagrangian.f(x))
 
     return xk, ck, lambda_k
 
