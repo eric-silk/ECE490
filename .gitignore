@@ -1,5 +1,6 @@
 ## Project Specific Stuff
 490_env/*
+*.vscode
 # Require force adding PDF's
 *.pdf
 

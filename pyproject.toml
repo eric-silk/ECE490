@@ -25,6 +25,7 @@ packages = [{include = "uiuc_490_sp23"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 numpy = "^1.24.2"
+matplotlib = "^3.7.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
@@ -32,6 +33,7 @@ pylint = "^2.16.1"
 
 [tool.poetry.scripts]
 assignment1 = "assignment1:__main__"
+assignment3 = "assignment3:__main__"
 
 [build-system]
 requires = ["poetry-core"]

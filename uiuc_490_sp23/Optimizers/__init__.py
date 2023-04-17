@@ -11,6 +11,9 @@ class Optimizer(ABC):
     def step(self, x: np.ndarray, debug: bool = False) -> np.ndarray:
         pass
 
+    def __call__(self, x: np.ndarray, debug: bool = False) -> np.ndarray:
+        return self.step(x, debug=debug)
+
 
 class GradientDescent(Optimizer):
     def __init__(self, f: Problem, line_search: LineSearch) -> None:

@@ -13,6 +13,10 @@ class Constraint(ABC):
     def evaluate(self, x: np.ndarray) -> np.ndarray:
         pass
 
+    @abstractclassmethod
+    def gradient(self, x: np.ndarray) -> np.ndarray:
+        pass
+
 
 class EqualityConstraint(Constraint):
     """
@@ -26,7 +30,7 @@ class InequalityConstraint(Constraint):
     """
 
 
-class LinearEquality(EqualityConstraint):
+class LinearEqualityConstraint(EqualityConstraint):
     """
     A simple linear equality constraint Ax=b, or h(x) = Ax-b = 0
     """
@@ -46,5 +50,9 @@ class LinearEquality(EqualityConstraint):
         else:
             return h
 
-    def __call__(self, x: np.ndarray, norm: bool = True) -> float:
-        return self.evaluate(x, norm=norm)
+    def gradient(self, x: np.ndarray) -> np.ndarray:
+        _ = x  # Linear, no dependence on x
+        return self.A.T
+
+    def dimension(self) -> int:
+        return self.A.shape[0]
