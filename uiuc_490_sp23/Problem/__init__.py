@@ -61,7 +61,7 @@ class AugmentedLagrangian(Problem):
         f: Problem,
         h: LinearEqualityConstraint,
         lambda0: Optional[float] = None,
-        c0: float = 0.0,
+        c0: float = 0.1,
     ) -> None:
         super().__init__()
         self.f = f

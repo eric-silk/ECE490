@@ -3,6 +3,8 @@ from typing import Tuple, Callable, List
 import numpy as np
 import matplotlib.pyplot as plt
 
+from scipy.optimize import minimize, LinearConstraint
+
 from ..Problem import SimpleQuadraticForm, AugmentedLagrangian
 from ..Constraints import LinearEqualityConstraint
 from ..Optimizers import GradientDescent
@@ -18,15 +20,23 @@ def _get_Q_A_b(m: int, n: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     return Q, A, b
 
 
+def _get_solution_via_scipy(
+    f: Callable[[np.ndarray], float], A: np.ndarray, b: np.ndarray, x0: np.ndarray
+):
+    linear_constraints = LinearConstraint(A, b, b)
+    res = minimize(f, x0, method="trust-constr", constraints=[linear_constraints])
+    return res
+
+
 def _do_optimization(
-    m: int,
-    n: int,
+    Q: np.ndarray,
+    A: np.ndarray,
+    b: np.ndarray,
     epsilon: float,
     inner_iter_count: int,
     c_update: Callable[[float], float],
 ) -> Tuple[List[np.ndarray], List[float], List[np.ndarray]]:
     # Set up the problem
-    Q, A, b = _get_Q_A_b(m, n)
     quadratic = SimpleQuadraticForm(Q)
     h = LinearEqualityConstraint(A, b)
     lagrangian = AugmentedLagrangian(quadratic, h)
@@ -35,6 +45,7 @@ def _do_optimization(
     line_search = Backtracking(lagrangian, 1.0, 0.1, 0.5)
     optimizer = GradientDescent(lagrangian, line_search)
 
+    n = Q.shape[1]
     x = np.ones(n)
     xk = [x]
     ck = [lagrangian.c]
@@ -50,10 +61,11 @@ def _do_optimization(
         lagrangian.c = c_update(lagrangian.c)
         ck.append(lagrangian.c)
         lambda_k.append(lagrangian.lambda_)
-        print(np.linalg.norm(h(x), ord=2))
         i += 1
 
     print(f"Converged after {i} outer iterations!")
+    print(x)
+    print(lagrangian.f(x))
 
     return xk, ck, lambda_k
 
@@ -65,8 +77,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--epsilon",
         type=float,
-        default=1e-3,
-        help="The convergence tolerance (default: 1e-3)",
+        default=1e-4,
+        help="The convergence tolerance (default: 1e-4)",
     )
     parser.add_argument(
         "--iter",
@@ -80,26 +92,37 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    c_update1 = lambda c: 2 * c
+    Q, A, b = _get_Q_A_b(args.m, args.n)
+    quadratic = SimpleQuadraticForm(Q)
+    h = LinearEqualityConstraint(A, b)
+    lagrangian = AugmentedLagrangian(quadratic, h)
+    x_star = _get_solution_via_scipy(lagrangian, A, b, np.ones(args.n))["x"]
+
+    c_update1 = lambda c: 1.1 * c
     c_update2 = lambda c: 2 * c
     c_update3 = lambda c: c + 1
     c_update4 = lambda c: c + 10
 
-    c_updates = [c_update1, c_update2, c_update3, c_update4]
-    c_updates = [c_update1]
+    c_updates = [
+        ("1.1*c", c_update1),
+        ("2*c", c_update2),
+        ("c+1", c_update3),
+        ("c+10", c_update4),
+    ]
 
     results = []
-    for c_update in c_updates:
-        results.append(
-            _do_optimization(args.m, args.n, args.epsilon, args.iter, c_update)
-        )
 
-    for result in results:
+    for _, c_update in c_updates:
+        results.append(_do_optimization(Q, A, b, args.epsilon, args.iter, c_update))
+
+    for (name, _), result in zip(c_updates, results):
         xk, ck, lambda_k = result
-        x_star = xk[-1]
         # There's certainly a vectorizable way of doing this but I just want it to work
         xdist = np.array([np.linalg.norm(x_star - x, ord=2) for x in xk])
         plt.figure(figsize=(16, 9))
         plt.plot(xdist)
+        plt.title(f"x*: {xk[-1]}\nC iteration scheme: {name}")
+        plt.xlabel("Iteration count (inner AND outer)")
+        plt.ylabel("Distance metric from x*")
 
     plt.show()
