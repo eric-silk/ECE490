@@ -6,6 +6,7 @@ from typing import Optional, Tuple
 from abc import ABC, abstractclassmethod
 import numpy as np
 
+from ..Constraints import EqualityConstraint
 from ..Exceptions import DimensionMismatch
 
 
@@ -20,6 +21,49 @@ class Problem(ABC):
     @abstractclassmethod
     def gradient(self, x: np.ndarray) -> np.ndarray:
         pass
+
+
+class SimpleQuadraticForm(Problem):
+    """
+    A "simple" Quadratic problem x^TQx (no linear b^Tx or bias +c term)
+    """
+
+    def __init__(self, Q: np.ndarray) -> None:
+        super().__init__()
+        self.Q = Q
+
+    def evaluate(self, x: np.ndarray) -> np.ndarray:
+        return x.T @ self.Q @ x
+
+    def gradient(self, x: np.ndarray) -> np.ndarray:
+        return self.Q.T @ x + self.Q @ x
+
+
+class AugmentedLagrangian(Problem):
+    """
+    A problem encapsulating the augmented lagrangian/method of multipliers for an equality constrained problem
+    """
+
+    def __init__(
+        self,
+        f: Problem,
+        h: EqualityConstraint,
+        lambda0: Optional[np.ndarray] = None,
+        c0: float = 0.0,
+    ) -> None:
+        super().__init__()
+        self.f = f
+        self.h = h
+        # TODO looks like we need to defer the initialization of lambda0?
+        if lambda0 is None:
+            self.lambda_ = None
+        else:
+            self.lambda_ = lambda0
+        self.c = c0
+
+    def evaluate(self, x: np.ndarray) -> np.ndarray:
+        h = self.h(x)
+        return self.f(x) + self.lambda_.T @ h + self.c / 2 * np.norm(h, ord=2) ** 2
 
 
 class QuadraticForm(Problem):
