@@ -12,6 +12,9 @@ from ..LineSearch import Backtracking
 
 
 def _get_Q_A_b(m: int, n: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    As provided by the lab assignment, generate a a PSD Q matrix along with some randomized linear equality constraints
+    """
     Q = np.random.rand(n, n) - 0.5
     Q = 10 * Q @ Q.T + 0.1 * np.eye(n)
     A = np.random.normal(size=(m, n))
@@ -20,12 +23,19 @@ def _get_Q_A_b(m: int, n: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     return Q, A, b
 
 
-def _get_solution_via_scipy(
-    f: Callable[[np.ndarray], float], A: np.ndarray, b: np.ndarray, x0: np.ndarray
-):
+def _get_solution_via_scipy(Q: np.ndarray, A: np.ndarray, b: np.ndarray):
+    """
+    This function exists to give us ground truth to compare our convergence results to
+    """
+    x0 = np.random.random(Q.shape[1])
+    quadratic = SimpleQuadraticForm(Q)
+    h = LinearEqualityConstraint(A, b)
+    lagrangian = AugmentedLagrangian(quadratic, h)
     linear_constraints = LinearConstraint(A, b, b)
-    res = minimize(f, x0, method="trust-constr", constraints=[linear_constraints])
-    return res
+    res = minimize(
+        lagrangian, x0, method="trust-constr", constraints=[linear_constraints]
+    )
+    return res["x"]
 
 
 def _do_optimization(
@@ -36,6 +46,9 @@ def _do_optimization(
     inner_iter_count: int,
     c_update: Callable[[float], float],
 ) -> Tuple[List[np.ndarray], List[float], List[np.ndarray]]:
+    """
+    Do the optimization loop for a given set of params.
+    """
     # Set up the problem
     quadratic = SimpleQuadraticForm(Q)
     h = LinearEqualityConstraint(A, b)
@@ -92,22 +105,18 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    np.random.seed(args.seed)
     Q, A, b = _get_Q_A_b(args.m, args.n)
-    quadratic = SimpleQuadraticForm(Q)
-    h = LinearEqualityConstraint(A, b)
-    lagrangian = AugmentedLagrangian(quadratic, h)
-    x_star = _get_solution_via_scipy(lagrangian, A, b, np.ones(args.n))["x"]
 
-    c_update1 = lambda c: 1.1 * c
-    c_update2 = lambda c: 2 * c
-    c_update3 = lambda c: c + 1
-    c_update4 = lambda c: c + 10
+    x_star = _get_solution_via_scipy(Q, A, b)
+    print("Ground truth value:", x_star)
 
     c_updates = [
-        ("1.1*c", c_update1),
-        ("2*c", c_update2),
-        ("c+1", c_update3),
-        ("c+10", c_update4),
+        ("c=1000", lambda c: 1000),
+        ("1.1*c", lambda c: 1.1 * c),
+        ("2*c", lambda c: 2 * c),
+        ("c+1", lambda c: c + 1),
+        ("c+10", lambda c: c + 10),
     ]
 
     results = []
@@ -115,14 +124,26 @@ if __name__ == "__main__":
     for _, c_update in c_updates:
         results.append(_do_optimization(Q, A, b, args.epsilon, args.iter, c_update))
 
+    plt.figure(figsize=(16, 9))
+    plt.title(f"x*: {x_star}")
     for (name, _), result in zip(c_updates, results):
         xk, ck, lambda_k = result
         # There's certainly a vectorizable way of doing this but I just want it to work
         xdist = np.array([np.linalg.norm(x_star - x, ord=2) for x in xk])
-        plt.figure(figsize=(16, 9))
-        plt.plot(xdist)
-        plt.title(f"x*: {xk[-1]}\nC iteration scheme: {name}")
+        plt.plot(xdist, label=name)
+        plt.xlabel("Iteration count (inner AND outer)")
+        plt.ylabel("Distance metric from x*")
+    plt.legend()
+
+    plt.figure(figsize=(16, 9))
+    plt.title(f"x*: {x_star}")
+    for (name, _), result in zip(c_updates, results):
+        xk, ck, lambda_k = result
+        # There's certainly a vectorizable way of doing this but I just want it to work
+        xdist = np.array([np.linalg.norm(x_star - x, ord=2) for x in xk])
+        plt.semilogy(xdist, label=name)
         plt.xlabel("Iteration count (inner AND outer)")
         plt.ylabel("Distance metric from x*")
 
+    plt.legend()
     plt.show()
