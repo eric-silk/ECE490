@@ -113,7 +113,7 @@ def plot_image_parallel(
     plt.show()
 
 
-if __name__ == "__main__":
+def main() -> None:
     # Example of usage .
     # In this example , the stationary points are (0 , 0 ) , (1 , 1 ) , (2 , 2 ) and (3 , 3 ) .
     # Replace these with the ones obatined in part a).

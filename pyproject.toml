@@ -34,6 +34,7 @@ pylint = "^2.16.1"
 
 [tool.poetry.scripts]
 assignment1 = "assignment1:__main__"
+assignment2 = "assignment2:__main__"
 assignment3 = "assignment3:__main__"
 
 [build-system]

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 from typing import Callable
-import asgn_source as asou
 import numpy as np
 import scipy.optimize as so
 
+from . import asgn_source as asou
 
 DIM = 25
 MAX_ITER = 1000
@@ -114,7 +114,7 @@ def check_solution(
     return result
 
 
-if __name__ == "__main__":
+def main() -> None:
     n = DIM
     np.random.seed(SEED)
     constraint_min, constraint_max, Q_val, b_val, c_val = asou.get_parameters(n)
