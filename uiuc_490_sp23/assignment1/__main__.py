@@ -37,6 +37,7 @@ def _do_optimization(
 
     print(f"x*:\n{xk}\nf(x*): {f(xk)[0]}, ||∇f(x*)||: {norm}")
 
+
 def _directly_calculate_minimizer(f: QuadraticForm) -> None:
     """
     Given a Quadratic Form problem, directly solve for the minimum.
@@ -47,23 +48,24 @@ def _directly_calculate_minimizer(f: QuadraticForm) -> None:
     b = f.get_b()
     # The quadratic form is normally listed as (1/2)(x^T Q x) - bx + c with a minimizer at Qx=b
     # However, our problem is of the form x^T Q x + bx + c, so we need to solve 2Qx = -b
-    x_star = np.linalg.lstsq(2*Q,-b,rcond=None)[0]
+    x_star = np.linalg.lstsq(2 * Q, -b, rcond=None)[0]
     grad_norm = np.linalg.norm(f.gradient(x_star))
 
     print(f"x*:\n{x_star}\nf(x*): {f(x_star)[0]}, ||∇f(x*)||: {grad_norm}")
 
-def _calculate_optimal_alpha(f: QuadraticForm, scaling: float=0.99) -> float:
+
+def _calculate_optimal_alpha(f: QuadraticForm, scaling: float = 0.99) -> float:
     """
     Given a QuadraticForm problem, determine the optimal stepsize alpha.
     args:
         f: a QuadraticForm problem
         scaling: We need alpha < 2/L, so calculate 2/L and scale it by this value (default=0.99)
     """
-    Q = 2*f.get_Q()
+    Q = 2 * f.get_Q()
     s = np.linalg.svd(Q, compute_uv=False)
     L = np.max(s).item()
     # Make it just slightly less than 2/L
-    alpha = (2/L)*0.99
+    alpha = (2 / L) * 0.99
     print("alpha:", alpha)
     return alpha
 
@@ -83,20 +85,30 @@ def assignment1(seed: int, epsilon: float, n: int, max_iter: int) -> None:
     x0 = np.random.random(n)
 
     print(f"ε: {epsilon}")
-    print("="*80)
+    print("=" * 80)
     _do_optimization(f, gradient_descent_fixed_alpha, x0, epsilon, max_iter=max_iter)
-    print("="*80)
+    print("=" * 80)
     _do_optimization(f, gradient_descent_armijo, x0, epsilon, max_iter=max_iter)
-    print("="*80)
+    print("=" * 80)
     _directly_calculate_minimizer(f)
 
 
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog="assignment1",
+        description=(
+            "A basic Gradient Descent implementation to "
+            "solve a randomly generated quadratic problem"
+        ),
+    )
     parser.add_argument(
-        "-s", "--seed", type=int, default=1234, help="The seed to use for randomization (default=1234)"
+        "-s",
+        "--seed",
+        type=int,
+        default=1234,
+        help="The seed to use for randomization (default=1234)",
     )
     parser.add_argument(
         "-e",

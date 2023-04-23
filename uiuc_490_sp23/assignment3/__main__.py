@@ -86,7 +86,13 @@ def _do_optimization(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog="assignment3",
+        description=(
+            "Solve an equality constrained quadratic "
+            "problem using the augmented Lagrangian method"
+        ),
+    )
     parser.add_argument("-m", type=int, required=True)
     parser.add_argument("-n", type=int, required=True)
     parser.add_argument(

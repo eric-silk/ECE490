@@ -148,3 +148,6 @@ class QuadraticForm(Problem):
 
     def get_values(self) -> Tuple[np.ndarray, np.ndarray, float]:
         return (self.Q, self.b, self.c)
+
+    def input_dimension(self) -> int:
+        return self.Q.shape[1]

@@ -5,14 +5,23 @@ from .projected_gd import main as pgd_main
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog="assignment2", description="Assignment 2 for ECE 490 SP2023"
+    )
     # Mutex group currently broken: https://github.com/python/cpython/issues/103711
-    # parser.add_mutually_exclusive_group(required=True)
-    parser.add_argument("--newton", action="store_true", help="Run the Newton Script")
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "--newton",
+        action="store_true",
+        help=(
+            "Run the Newton Script, generates a fractal showing a color coding of which"
+            " stationary point the algorithm arrives at based upon the starting point."
+        ),
+    )
+    group.add_argument(
         "--pgd",
         action="store_true",
-        help="Run the Projected Gradient Descent Script",
+        help="Run the Projected Gradient Descent Script, solves a basic box constraint problem",
     )
 
     return parser.parse_args()
@@ -20,8 +29,6 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     args = parse_args()
-    if not args.newton ^ args.pgd:
-        raise ValueError("One (and only one) of --newton or --pgd is required")
     if args.newton:
         newton_main()
     elif args.pgd:
