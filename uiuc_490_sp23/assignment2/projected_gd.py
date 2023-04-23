@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from typing import Callable
 import numpy as np
 import scipy.optimize as so
 
@@ -12,7 +11,7 @@ SEED = 1234
 
 
 class F:
-    def __init__(self, Q: np.ndarray, b: np.ndarray, c: float):
+    def __init__(self, Q: np.ndarray, b: np.ndarray, c: float) -> None:
         self.Q = Q
         self.b = b
         self.c = c
@@ -61,7 +60,6 @@ def calculate_optimal_alpha(Q: np.ndarray, scaling: float = 0.99) -> float:
     return alpha
 
 
-# TODO fix this, the prompt asks for a fixed step size
 def grad_descent(x: np.ndarray, f: F, alpha: float) -> np.ndarray:
     # alpha = armijo(x, f)
     return x - alpha * f.grad(x)
